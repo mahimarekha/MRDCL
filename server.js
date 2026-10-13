@@ -830,7 +830,7 @@ function setSecurityHeaders(res) {
   // Field photos use camera/GPS only after the surveyor grants permission.
   // A deployed mobile portal must use HTTPS for browsers to grant these APIs.
   res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(self), microphone=()');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'self' https://unpkg.com; script-src 'self' https://unpkg.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self';");
+  res.setHeader('Content-Security-Policy', "default-src 'self'; style-src 'self' https://unpkg.com; script-src 'self' https://unpkg.com; img-src 'self' data: https://server.arcgisonline.com; connect-src 'self' https://unpkg.com https://server.arcgisonline.com;");
 }
 async function api(req, res, url) {
   const pathname = url.pathname;
@@ -1448,8 +1448,8 @@ async function api(req, res, url) {
 function serveStatic(req, res, url) {
   // The phone clients previously retained an early interface in their browser
   // cache. Always route the normal address to the current release URL once.
-  if (url.pathname === '/' && url.searchParams.get('release') !== 'mobile-v99') {
-    res.writeHead(302, { Location: '/?release=mobile-v99', 'Cache-Control': 'no-store, max-age=0' }); res.end(); return;
+  if (url.pathname === '/' && url.searchParams.get('release') !== 'mobile-v100') {
+    res.writeHead(302, { Location: '/?release=mobile-v100', 'Cache-Control': 'no-store, max-age=0' }); res.end(); return;
   }
   let requested = url.pathname === '/' ? '/index.html' : url.pathname;
   requested = path.normalize(requested).replace(/^([/\\])+/, ''); const file = path.join(STATIC_DIR, requested);

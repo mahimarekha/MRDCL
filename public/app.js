@@ -1308,7 +1308,7 @@ function showZoneLanding() {
   state.selectedZone = null;
   setProgrammeMapMode(true);
   $('#appView').classList.add('zone-selection-active');
-  setTimeout(() => { fitProgrammeMap(); state.map.invalidateSize(); }, 50);
+  setTimeout(() => { if (!state.map) return; fitProgrammeMap(); state.map.invalidateSize(); }, 50);
 }
 async function openZone(zone, { showMenu = true } = {}) {
   const phase = musiPhaseZones.find(item => item.id === String(zone));
@@ -1563,7 +1563,7 @@ async function renderHouseholdHistory(household) {
   }
 }
 function photoCard(photo, allowManage = false) { const location = Number.isFinite(Number(photo.latitude)) && Number.isFinite(Number(photo.longitude)) ? `${Number(photo.latitude).toFixed(6)}, ${Number(photo.longitude).toFixed(6)}` : 'Building location fallback'; return `<article class="photo-card"><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener"><img src="${escapeHtml(photo.url)}" alt="${escapeHtml(photo.original_name)}"></a><div><b>${escapeHtml(photo.original_name)}</b><small>${escapeHtml(photo.uploaded_by)} · ${new Date(photo.captured_at || photo.uploaded_at).toLocaleString()}</small><small>Location: ${location}</small><p><a href="${escapeHtml(photo.download_url)}">Download photo</a>${allowManage ? ` <button type="button" data-delete-photo="${photo.id}">Remove</button>` : ''}</p></div></article>`; }
-function drawPhotoMarkers(photos) { if (state.photoLayer) state.photoLayer.remove(); state.photoLayer = L.layerGroup(); photos.filter(photo => Number.isFinite(Number(photo.latitude)) && Number.isFinite(Number(photo.longitude))).forEach(photo => L.marker([Number(photo.latitude), Number(photo.longitude)], { title:`Field photo: ${photo.original_name}`, riseOnHover:true, icon:mapPinIcon('photo') }).bindPopup(`<b>Field photo</b><br>${escapeHtml(photo.original_name)}<br><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener">View photo</a>`).addTo(state.photoLayer)); if (state.photoLayer.getLayers().length) state.photoLayer.addTo(state.map); }
+function drawPhotoMarkers(photos) { if (typeof L === 'undefined' || !state.map) return; if (state.photoLayer) state.photoLayer.remove(); state.photoLayer = L.layerGroup(); photos.filter(photo => Number.isFinite(Number(photo.latitude)) && Number.isFinite(Number(photo.longitude))).forEach(photo => L.marker([Number(photo.latitude), Number(photo.longitude)], { title:`Field photo: ${photo.original_name}`, riseOnHover:true, icon:mapPinIcon('photo') }).bindPopup(`<b>Field photo</b><br>${escapeHtml(photo.original_name)}<br><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener">View photo</a>`).addTo(state.photoLayer)); if (state.photoLayer.getLayers().length) state.photoLayer.addTo(state.map); }
 function currentPhotoPosition() { return new Promise(resolve => { if (!navigator.geolocation) { resolve(null); return; } navigator.geolocation.getCurrentPosition(position => resolve({ latitude:position.coords.latitude, longitude:position.coords.longitude }), () => resolve(null), { enableHighAccuracy:true, timeout:9000, maximumAge:30000 }); }); }
 function readPhoto(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onerror = () => reject(new Error('The selected photo could not be read.')); reader.onload = () => resolve(reader.result); reader.readAsDataURL(file); }); }
 async function renderPhotos(household) {
@@ -1723,5 +1723,5 @@ async function startApp(user) {
   await refreshPendingOperations(); startRealtime(); flushOfflineQueue();
   window.setTimeout(showPortalGuideForNewUser, 250);
 }
-async function boot() { setupEvents(); if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js?v=99').catch(() => {}); try { const data = await api('/api/me'); await startApp(data.user); } catch { /* Sign-in view is the expected state. */ } }
+async function boot() { setupEvents(); if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js?v=100').catch(() => {}); try { const data = await api('/api/me'); await startApp(data.user); } catch { /* Sign-in view is the expected state. */ } }
 boot();

@@ -1,4 +1,4 @@
-const CACHE = 'mrdcl-portal-v99';
+const CACHE = 'mrdcl-portal-v100';
 const TILE_CACHE = 'mrdcl-esri-tiles-v1';
 const APP_SHELL = ['/', '/index.html', '/styles.css', '/map-shell.css', '/app.js', '/manifest.webmanifest', '/icon.svg'];
 const OPTIONAL_SHELL = ['https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
@@ -17,5 +17,5 @@ self.addEventListener('fetch', event => {
     return;
   }
   if (url.origin !== self.location.origin && url.origin !== 'https://unpkg.com') return;
-  event.respondWith(fetch(event.request).catch(() => caches.match(event.request, { ignoreSearch:true })));
+  event.respondWith(fetch(event.request).catch(async () => (await caches.match(event.request, { ignoreSearch:true })) || Response.error()));
 });

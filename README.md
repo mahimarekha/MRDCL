@@ -102,5 +102,3 @@ This reads the corresponding layer files referenced by `J:\589q.qgz`; it never e
 - The map shows the supplied Phase 1 building polygons only. It intentionally has no third-party road, satellite, or OpenStreetMap background. When further phases arrive, import their source into a controlled new web-map copy and migrate it without overwriting questionnaire edits.
 - Keep `database/mrdcl-surveys.db` private. It contains household survey information and must not be placed in a shared web folder.
 - The questionnaire data and audit log are new application data. The source shapefile remains a read-only baseline.
-"# MRDCL" 
-"# MRDCL" 
